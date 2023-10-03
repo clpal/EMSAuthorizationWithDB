@@ -2,6 +2,8 @@ package com.javatechi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -18,23 +20,33 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class EMSUpgradeSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
-        UserDetails user=  User.withUsername("chhote").password(passwordEncoder().encode("pwd1")).roles("USER").build();
-        UserDetails admin=  User.withUsername("anju").password(passwordEncoder().encode("pwd2")).roles("ADMIN").build();
-        UserDetails userAdmin=  User.withUsername("adi").password(passwordEncoder().encode("pwd3")).roles("USER","ADMIN").build();
-       return new InMemoryUserDetailsManager(user,userAdmin,admin);
+        UserDetails employee=  User.withUsername("chhote").password(passwordEncoder().encode("pwd1")).roles("EMPLOYEE").build();
+        UserDetails hr=  User.withUsername("anju").password(passwordEncoder().encode("pwd2")).roles("HR").build();
+        UserDetails admin=  User.withUsername("adi").password(passwordEncoder().encode("pwd3")).roles("HR","MANAGER").build();
+       return new InMemoryUserDetailsManager(employee,hr,admin);
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-      return   http.authorizeRequests().antMatchers("/nonsecure").permitAll().
+     /* return   http.authorizeRequests().antMatchers("/nonsecure").permitAll().
                 and()
                 .authorizeRequests().antMatchers("/welcome","/text").authenticated().
                 and().httpBasic()
+                .and().build(); */
+      return   http.csrf().disable().authorizeRequests().antMatchers("/employees/welcome").permitAll().
+                and()
+                .authorizeRequests().antMatchers("/employees/**").authenticated().
+                and().httpBasic()
                 .and().build();
-
+       /* return   http.authorizeRequests().antMatchers("/employees/welcome").permitAll().
+                and()
+                .authorizeRequests().antMatchers("/employees/**").authenticated().
+                and().httpBasic()
+                .and().build();*/
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
