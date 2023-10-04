@@ -11,6 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
+
+    public  static final String AUTHORITY_ROLE_HR="hasAuthority('ROLE_HR')";
     @Autowired
     EmployeeService service;
     @GetMapping("/welcome")
@@ -18,7 +20,7 @@ public class EmployeeController {
         return "Welcome to the javaTechie! . Your official credential already has been shared over email";
     }
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ROLE_HR')")
+   // @PreAuthorize("hasAuthority('ROLE_HR')")
     public Employee onboardingNewEmployee(@RequestBody Employee employee){
         return  service.createNewEmployee(employee);
     }
@@ -32,5 +34,11 @@ public class EmployeeController {
     @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
     public Employee getEmployeeById(@PathVariable Integer id){
         return  service.getEmployee(id);
+    }
+
+    @PutMapping("/update")
+  @PreAuthorize(AUTHORITY_ROLE_HR)
+    public  Employee updateRoles(@RequestBody  Employee employee){
+        return  service.changeRoleOfEmployee(employee);
     }
 }

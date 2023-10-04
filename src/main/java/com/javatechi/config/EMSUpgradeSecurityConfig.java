@@ -1,5 +1,6 @@
 package com.javatechi.config;
 
+import com.javatechi.service.EmployeeUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
@@ -25,10 +26,12 @@ public class EMSUpgradeSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder){
-        UserDetails employee=  User.withUsername("chhote").password(passwordEncoder().encode("pwd1")).roles("EMPLOYEE").build();
+
+    /*    UserDetails employee=  User.withUsername("chhote").password(passwordEncoder().encode("pwd1")).roles("EMPLOYEE").build();
         UserDetails hr=  User.withUsername("anju").password(passwordEncoder().encode("pwd2")).roles("HR").build();
         UserDetails admin=  User.withUsername("adi").password(passwordEncoder().encode("pwd3")).roles("HR","MANAGER").build();
-       return new InMemoryUserDetailsManager(employee,hr,admin);
+       return new InMemoryUserDetailsManager(employee,hr,admin);*/
+        return  new EmployeeUserDetailsService();
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -37,7 +40,7 @@ public class EMSUpgradeSecurityConfig {
                 .authorizeRequests().antMatchers("/welcome","/text").authenticated().
                 and().httpBasic()
                 .and().build(); */
-      return   http.csrf().disable().authorizeRequests().antMatchers("/employees/welcome").permitAll().
+      return   http.csrf().disable().authorizeRequests().antMatchers("/employees/welcome","/employees/create").permitAll().
                 and()
                 .authorizeRequests().antMatchers("/employees/**").authenticated().
                 and().httpBasic()
