@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -40,5 +41,10 @@ public class EmployeeController {
   @PreAuthorize(AUTHORITY_ROLE_HR)
     public  Employee updateRoles(@RequestBody  Employee employee){
         return  service.changeRoleOfEmployee(employee);
+    }
+    @GetMapping("/test")
+    @PreAuthorize("hasAuthority('ROLE_EMPLOYEE')")
+    public String test(Principal principal){
+        return principal.getName();
     }
 }
